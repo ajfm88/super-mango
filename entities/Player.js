@@ -10,33 +10,11 @@ export class Player {
   coins = 0
 
   constructor(posX, posY, speed) {
-    this.loadPlayerAnims()
     this.makePlayer(posX, posY)
     this.speed = speed
     this.previousHeight = this.gameObj.pos.y
     this.setPlayerControls()
     this.update()
-  }
-
-  loadPlayerAnims() {
-    loadSprite("player", "/assets/Player.png", {
-      sliceX: 4,
-      sliceY: 6,
-      anims: {
-        idle: {
-          from: 0,
-          to: 3,
-          loop: true,
-        },
-        run: {
-          from: 4,
-          to: 7,
-          loop: true,
-        },
-        "jump-up": 8,
-        "jump-down": 9,
-      },
-    })
   }
 
   makePlayer(x, y) {
@@ -84,7 +62,7 @@ export class Player {
     })
 
     onKeyPress("space", () => {
-      if (this.gameObj.isGrounded()) this.gameObj.jump()
+      if (this.gameObj.isGrounded() && !this.isRespawning) this.gameObj.jump()
     })
 
     onKeyRelease(() => {
@@ -99,6 +77,8 @@ export class Player {
     if (this.lives > 0) {
       this.gameObj.pos = vec2(this.initialX, this.initialY)
       this.lives--
+      this.isRespawning = true
+      setTimeout(() => (this.isRespawning = false), 1000)
       return
     }
 
