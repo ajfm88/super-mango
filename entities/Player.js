@@ -38,6 +38,10 @@ export class Player {
       if (collision.target.is("passthrough") && this.gameObj.isJumping()) {
         collision.preventResolution()
       }
+
+      if (collision.target.is("passthrough") && isKeyDown("down")) {
+        collision.preventResolution()
+      }
     })
   }
 
@@ -91,6 +95,7 @@ export class Player {
     this.gameObj.onCollide("fish", () => this.respawnPlayer())
     this.gameObj.onCollide("spiders", () => this.respawnPlayer())
     this.gameObj.onCollide("flames", () => this.respawnPlayer())
+    this.gameObj.onCollide("axes", () => this.respawnPlayer())
   }
 
   update() {
