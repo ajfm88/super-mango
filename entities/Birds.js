@@ -17,6 +17,7 @@ export class Birds {
             "dive-attack-left",
             "dive-attack-right",
           ]),
+          offscreen(),
           "birds",
         ])
       )
@@ -35,12 +36,7 @@ export class Birds {
           easings.linear
         )
 
-        if (Math.random() > 0.5) {
-          bird.enterState("dive-attack-left")
-          return
-        }
-
-        bird.enterState("fly-right")
+        bird.enterState("dive-attack-left")
       })
       bird.onStateEnter("fly-right", async () => {
         bird.flipX = true
@@ -52,12 +48,7 @@ export class Birds {
           easings.linear
         )
 
-        if (Math.random() > 0.5) {
-          bird.enterState("dive-attack-right")
-          return
-        }
-
-        bird.enterState("fly-left")
+        bird.enterState("dive-attack-right")
       })
 
       bird.onStateEnter("dive-attack-left", async () => {
@@ -82,7 +73,7 @@ export class Birds {
           easings.easeInSine
         )
 
-        bird.enterState("fly-left")
+        bird.enterState("fly-right")
       })
 
       bird.onStateEnter("dive-attack-right", async () => {
@@ -107,7 +98,7 @@ export class Birds {
           easings.linear
         )
 
-        bird.enterState("fly-right")
+        bird.enterState("fly-left")
       })
     }
   }
