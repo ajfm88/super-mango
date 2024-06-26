@@ -28,67 +28,13 @@ load.assets()
 load.sounds()
 
 const soundMap = {}
-
+const UIManager = new UI()
 const scenes = {
   menu: () => {
-    const level = new Level()
-    level.drawBackground("forest-background")
-    add([
-      sprite("logo"),
-      fixed(),
-      area(),
-      anchor("center"),
-      pos(center().x, center().y - 200),
-      scale(8),
-    ])
-
-    const UIManager = new UI()
-    UIManager.displayBlinkingUIMessage(
-      "Press [ Enter ] to Start Game",
-      vec2(center().x, center().y + 100)
-    )
-
-    onKeyPress("enter", () => {
-      play("confirm-ui", { speed: 1.5 })
-      go("controls")
-    })
+    UIManager.displayMainMenu()
   },
   controls: () => {
-    const level = new Level()
-    level.drawBackground("forest-background")
-
-    add([
-      text("Controls", { font: "Round", size: 50 }),
-      area(),
-      anchor("center"),
-      pos(center().x, center().y - 200),
-    ])
-
-    const controlPrompts = add([pos(center().x + 30, center().y)])
-    controlPrompts.add([sprite("up"), pos(0, -80)])
-    controlPrompts.add([sprite("down")])
-    controlPrompts.add([sprite("left"), pos(-80, 0)])
-    controlPrompts.add([sprite("right"), pos(80, 0)])
-    controlPrompts.add([sprite("space"), pos(-200, 0)])
-    controlPrompts.add([
-      text("Jump", { font: "Round", size: 32 }),
-      pos(-190, 100),
-    ])
-    controlPrompts.add([
-      text("Move", { font: "Round", size: 32 }),
-      pos(10, 100),
-    ])
-
-    const UIManager = new UI()
-    UIManager.displayBlinkingUIMessage(
-      "Press [ Enter ] to Start Game",
-      vec2(center().x, center().y + 300)
-    )
-
-    onKeyPress("enter", () => {
-      play("confirm-ui", { speed: 1.5 })
-      go(1)
-    })
+    UIManager.displayControlsMenu()
   },
   1: () => {
     soundMap.waterAmbience = play("water-ambience", {
@@ -132,7 +78,6 @@ const scenes = {
 
     const camera = new Camera()
     camera.attach(player.gameObj, 0, -200, null, 200)
-    const UIManager = new UI()
     UIManager.addDarkBg()
     UIManager.displayLivesCount(player)
     UIManager.displayCoinCount(player)
@@ -194,7 +139,6 @@ const scenes = {
     const camera = new Camera()
     camera.attach(player.gameObj, 0, -200, null, 200)
 
-    const UIManager = new UI()
     UIManager.addDarkBg()
     UIManager.displayLivesCount(player)
     UIManager.displayCoinCount(player)
@@ -204,7 +148,7 @@ const scenes = {
   },
   3: () => {
     if (soundMap.lavaAmbience) soundMap.lavaAmbience.paused = true
-    soundMap.windAmbience = play("strong-wind", { loop: true })
+    soundMap.windAmbience = play("strong-wind", { volume: 0.2, loop: true })
     setGravity(level3Config.gravity)
     const level3 = new Level()
     level3.drawBackground("sky-background-0")
@@ -237,7 +181,6 @@ const scenes = {
     const camera = new Camera()
     camera.attach(player.gameObj, 0, -200, null, 200)
 
-    const UIManager = new UI()
     UIManager.addDarkBg()
     UIManager.displayLivesCount(player)
     UIManager.displayCoinCount(player)
@@ -245,46 +188,8 @@ const scenes = {
     player.updateLives(UIManager.livesCountUI)
     player.updateCoinCount(UIManager.coinCountUI)
   },
-  gameover: async () => {
-    add([rect(1280, 720), color(0, 0, 0)])
-    add([
-      text("Game Over!", { size: 50, font: "Round" }),
-      area(),
-      anchor("center"),
-      pos(center()),
-    ])
-
-    const UIManager = new UI()
-    UIManager.displayBlinkingUIMessage(
-      "Press [ Enter ] to Start Game",
-      vec2(center().x, center().y + 100)
-    )
-
-    onKeyPress("enter", () => {
-      play("confirm-ui")
-      go(1)
-    })
-  },
-  end: () => {
-    add([rect(1280, 720), color(0, 0, 0)])
-    add([
-      text("You Won!", { size: 50, font: "Round" }),
-      area(),
-      anchor("center"),
-      pos(center()),
-    ])
-
-    const UIManager = new UI()
-    UIManager.displayBlinkingUIMessage(
-      "Press [ Enter ] to Play Again",
-      vec2(center().x, center().y + 100)
-    )
-
-    onKeyPress("enter", () => {
-      play("confirm-ui")
-      go("menu")
-    })
-  },
+  gameover: async () => UIManager.displayGameOverScreen(),
+  end: () => UIManager.displayEndGameScreen(),
 }
 
 for (const key in scenes) {
