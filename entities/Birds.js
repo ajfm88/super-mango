@@ -34,69 +34,81 @@ export class Birds {
     )
   }
 
+  async dive(bird, target, duration) {
+    await tween(
+      bird.pos,
+      target,
+      duration,
+      (pos) => (bird.pos = pos),
+      easings.easeInSine
+    )
+  }
+
   setMovementPattern() {
     for (const [index, bird] of this.birds.entries()) {
-      bird.onStateEnter("fly-left", async () => {
+      const flyLeft = bird.onStateEnter("fly-left", async () => {
         bird.flipX = false
         await this.fly(bird, -this.ranges[index], 0.5)
         bird.enterState("dive-attack-left")
       })
-      bird.onStateEnter("fly-right", async () => {
+      const flyRight = bird.onStateEnter("fly-right", async () => {
         bird.flipX = true
         await this.fly(bird, this.ranges[index], 0.5)
         bird.enterState("dive-attack-right")
       })
 
-      bird.onStateEnter("dive-attack-left", async () => {
+      const diveAttackLeft = bird.onStateEnter("dive-attack-left", async () => {
         if (!bird.isOffScreen()) play("dive", { volume: 0.05 })
-        await tween(
-          bird.pos,
+        await this.dive(
+          bird,
           vec2(
             bird.pos.x - this.ranges[index],
             bird.pos.y + this.ranges[index]
           ),
-          0.5,
-          (pos) => (bird.pos = pos),
-          easings.easeInSine
+          0.5
         )
-        await tween(
-          bird.pos,
+        await this.dive(
+          bird,
           vec2(
             bird.pos.x - this.ranges[index],
             bird.pos.y - this.ranges[index]
           ),
-          0.5,
-          (pos) => (bird.pos = pos),
-          easings.easeInSine
+          0.5
         )
 
         bird.enterState("fly-right")
       })
 
-      bird.onStateEnter("dive-attack-right", async () => {
-        if (!bird.isOffScreen()) play("dive", { volume: 0.05 })
-        await tween(
-          bird.pos,
-          vec2(
-            bird.pos.x + this.ranges[index],
-            bird.pos.y + this.ranges[index]
-          ),
-          0.5,
-          (pos) => (bird.pos = pos),
-          easings.linear
-        )
-        await tween(
-          bird.pos,
-          vec2(
-            bird.pos.x + this.ranges[index],
-            bird.pos.y - this.ranges[index]
-          ),
-          0.5,
-          (pos) => (bird.pos = pos),
-          easings.linear
-        )
+      const diveAttackRight = bird.onStateEnter(
+        "dive-attack-right",
+        async () => {
+          if (!bird.isOffScreen()) play("dive", { volume: 0.05 })
+          await this.dive(
+            bird,
+            vec2(
+              bird.pos.x + this.ranges[index],
+              bird.pos.y + this.ranges[index]
+            ),
+            0.5
+          )
+          await this.dive(
+            bird,
+            vec2(
+              bird.pos.x + this.ranges[index],
+              bird.pos.y - this.ranges[index]
+            ),
+            0.5
+          )
 
-        bird.enterState("fly-left")
+          bird.enterState("fly-left")
+        }
+      )
+
+      onSceneLeave(() => {
+        flyLeft.cancel()
+        flyRight.cancel()
+        diveAttackLeft.cancel()
+        diveAttackRight.cancel()
       })
     }
   }
